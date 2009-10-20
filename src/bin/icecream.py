@@ -16,7 +16,7 @@ sys.path.append('..i/')
 #script.location = ''
 
 #s = Server(source)
-#s.password = 'hackmePbq11Kz'
+#s.password = 'hackme'
 
 import pyicecream
 from pyicecream import sources
@@ -25,6 +25,6 @@ from pyicecream import sources
 #This should be wrapped in App, which should also do the configuration part
 s = pyicecream.Stream()
 s.server.host = 'basil'
-s.server.password = 'hackmePbq11Kz'
+s.server.password = 'hackme'
 s.source = sources.Disk('/home/leon/Workspaces/py-icecream/samples/gapples/flac')
 s.run()
