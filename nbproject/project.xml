@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.python.project</type>
+    <configuration>
+        <data xmlns="http://nbpython.dev.java.net/ns/php-project/1">
+            <name>Py-Icecream</name>
+            <sources>
+                <root id="py-icecream.dir"/>
+                <root id="bin.dir"/>
+                <root id="snippets.dir"/>
+            </sources>
+            <tests>
+                <root id="test.dir"/>
+            </tests>
+        </data>
+    </configuration>
+</project>

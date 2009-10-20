@@ -1,0 +1,10 @@
+INPUT: 
+ --files / playlist
+ script
+ stdin (because it can)
+ audio device...
+
+OPTIONS:
+ mount
+ encoding/channels/bitrate
+ logging: console / path / level

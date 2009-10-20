@@ -1,0 +1,10 @@
+*.pyc
+#samples/gapless/ogg/
+samples/gapless/flac/
+samples/gapless/mp3/
+samples/gapless/wav/
+*.swp
+*.swo
+*.*~
+*.*#
+.ropeproject
