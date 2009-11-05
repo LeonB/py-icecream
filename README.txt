@@ -3,7 +3,7 @@ from py-icecream import Server
 import gobject
 
 s = Server()
-s.password = "hackmePbq11Kz"
+s.password = "hackme"
 
 #En nu.....
 s.queue().add('/home/leon/Workspaces/pmpd/samples/flac/*.flac')
@@ -23,7 +23,7 @@ from py-icecream import Server
 import gobject
 
 s = Server()
-s.password = "hackmePbq11Kz"
+s.password = "hackme"
 
 #En nu.....
 #@TODO: iets toevoegen met een callback zodat mogelijk is om de volgende 

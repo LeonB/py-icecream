@@ -1,3 +1,5 @@
+from callback_method import *
+
 class App(object):
 
     def __init__(self):

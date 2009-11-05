@@ -1,4 +1,5 @@
 import pyicecream
+import sys
 
 class Server(object):
     name = ''
@@ -9,12 +10,10 @@ class Server(object):
     port = 8000
     user = 'source'
     password = 'hackme'
-    mount = ''
+    mount = sys.argv[0]
     
     format = None
     protocol = None
-
-    source = pyicecream.Source()
 
     #def __init__(self, source):
         ##build in a check
