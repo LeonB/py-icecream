@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 
-print '~/Workspaces/py-icecream/samples/gapless/ogg/01. Beethoven.ogg'
+print 'file:///home/leon/Workspaces/py-icecream/samples/gapless/ogg/10. Beethoven.ogg'

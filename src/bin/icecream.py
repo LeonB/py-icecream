@@ -36,7 +36,7 @@ from pyicecream import sources
 s = pyicecream.Stream()
 s.server.host = 'basil'
 s.server.password = 'hackmePbq11Kz'
-s.source = sources.URI('~/Workspaces/py-icecream/samples/gapless')
+s.source = sources.Disk('~/Workspaces/py-icecream/samples/gapless')
 s.source = sources.Script('~/Workspaces/py-icecream/src/test/scripttest.py')
 s.run()
 

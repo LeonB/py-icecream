@@ -1,16 +1,18 @@
 from pyicecream.source import Source
 import os, glob
 from humansort import *
+import Queue
 
 #@TODO: use inotify for watching the directory?
 
-class URI(Source):
+class Disk(Source):
     def __init__(self, path, random = False, repeat = True, recursive = True):
-        super(URI, self).__init__()
+        super(Disk, self).__init__()
         self.path= path
         self.random = random
         self.repeat = repeat
         self.recursive = recursive
+        self.queue = Queue.Queue()
 
         found_files = []
         for path in glob.glob(os.path.expanduser(self.path)):

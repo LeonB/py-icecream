@@ -1,2 +1,2 @@
 from script import Script
-from uri import URI
+from disk import Disk

@@ -1,5 +1,3 @@
-import Queue
-
 class Source(object):
     """Can be anything: file, script, stdin, et cetera"""
     """It's meant to be extended, not used directly"""
@@ -8,7 +6,9 @@ class Source(object):
             #because they don't have to be de-coded
 
     def __init__(self):
-        self.queue = Queue.Queue()
+        pass
 
     def get(self):
+        #maybe call the childclass method different
+        #and check here for correct output (http://, file://, et cetera)
         raise Exception('NIY', 'function get() is not yet implemented!')
