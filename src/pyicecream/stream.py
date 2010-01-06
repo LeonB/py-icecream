@@ -1,5 +1,10 @@
+import threading
 import pyicecream
 import new
+#from threading import Thread
+from multiprocessing import Process
+import time
+import sys
 
 class Stream(object):
 
@@ -27,4 +32,26 @@ class Stream(object):
             raise IOError('No file given')
 
         self.backend.play()
-        #self.source.pop() #must be called from backend
+
+        #Voortgang in de gaten houden:
+#        p = Process(target=self.watch_progress, args=(self))
+#        p.start()
+        
+        t = threading.Thread(None, self.watch_progress)
+        t.daemon = True
+        t.start()
+
+    def watch_progress(self):
+        import gst
+        while 1:
+            try:
+                pass
+                pos = self.backend.query_position()
+                dur = self.backend.query_duration()
+                print pos
+                print dur
+                print float(pos)/float(dur)
+                print '------------------------'
+            except gst.QueryError, e:
+                print e
+            time.sleep(1)

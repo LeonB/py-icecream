@@ -22,14 +22,15 @@ s = pyicecream.Stream()
 s.server.host = 'basil'
 s.server.port = 9000
 s.server.password = 'hackmePbq11Kz'
+#s.source = sources.Disk('~/Music/02 Paranoid Android.mp3')
 s.source = sources.Disk('~/Workspaces/py-icecream/samples/gapless')
-s.source = sources.Script('~/Workspaces/py-icecream/src/test/scripttest.py')
+#s.source = sources.Script('~/Workspaces/py-icecream/src/test/scripttest.py')
 #s.source = sources.Script('wget -qO- http://basil/playlist | cat')
 
 s.hooks.source.transition = callbacks.Script("echo 'Dit is een overgang!'")
 s.hooks.stream.eos = callbacks.Script("echo 'Dit is het einde van alles....'")
-s.hooks.source.start_play = callbacks.Script('')
-s.hooks.source.halfway = callbacks.Script('')
+s.hooks.source.start_play = callbacks.Script("echo 'Start van een nieuw liedje'")
+s.hooks.source.halfway = callbacks.Script("echo 'Jeuh, halverwege het liedje!'")
 
 s.run()
 

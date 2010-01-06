@@ -16,6 +16,9 @@ class Disk(Source):
 
         found_files = []
         for path in glob.glob(os.path.expanduser(self.path)):
+            if os.path.isfile(path):
+                found_files.append(path)
+
             if not self.recursive:
                 for file in os.listdir(path):
                     if not os.path.isfile(file):

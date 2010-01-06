@@ -2,6 +2,8 @@ import string
 import gobject
 gobject.threads_init()
 import gst
+import time
+import re
 
 #@TODO: look into the posibilities of gst_controller:
 # * http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/section-dparams-parameters.html
@@ -42,9 +44,11 @@ class Backend(object):
     def play(self):
         self.construct_pipeline()
         self.playbin.set_state(gst.STATE_PLAYING)
+        self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
     
     def on_message(self, bus, message):
         t = message.type
+
         if t == gst.MESSAGE_EOS:
             self.playbin.set_state(gst.STATE_NULL)
 
@@ -70,3 +74,15 @@ class Backend(object):
         playbin.set_property('uri', self.uri)
         self.stream.hooks.source.call('transition', old_uri, new_uri)
         self.stream.hooks.source.call('eof', old_uri)
+        self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
+
+    def query_duration(self):
+        return self.playbin.query_duration(gst.FORMAT_TIME)[0] / 1000000000
+
+    def query_position(self):
+        for i in self.playbin.elements():
+            name = i.get_name()
+            if re.search('^playbin2inputselector[0-9]*$', name):
+                return i.query_position(gst.FORMAT_TIME)[0] / 1000000000
+
+        return 0
