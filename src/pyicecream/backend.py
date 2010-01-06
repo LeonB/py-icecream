@@ -8,6 +8,7 @@ import re
 #@TODO: look into the posibilities of gst_controller:
 # * http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/section-dparams-parameters.html
 # * http://www.google.nl/search?hl=nl&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aofficial&q=gstreamer+python++query+position&btnG=Zoeken&meta=&aq=f&oq=
+# * http://pygstdocs.berlios.de/pygst-reference/index.html
 
 class Backend(object):
 
@@ -80,9 +81,12 @@ class Backend(object):
         return self.playbin.query_duration(gst.FORMAT_TIME)[0] / 1000000000
 
     def query_position(self):
-        for i in self.playbin.elements():
-            name = i.get_name()
-            if re.search('^playbin2inputselector[0-9]*$', name):
-                return i.query_position(gst.FORMAT_TIME)[0] / 1000000000
+        try:
+            for i in self.playbin.elements():
+                name = i.get_name()
+                if re.search('^playbin2inputselector[0-9]*$', name):
+                    return i.query_position(gst.FORMAT_TIME)[0] / 1000000000
+        except TypeError, e:
+            pass
 
         return 0
