@@ -1,4 +1,4 @@
-class Hook(object):
+class Callback(object):
     """Can be anything: file, script, stdin, et cetera"""
     """It's meant to be extended, not used directly"""
 

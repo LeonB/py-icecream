@@ -12,7 +12,11 @@ class Script(Source):
         output = sp.communicate()[0]
 
         if sp.returncode > 0:
-            'something went wrong'
+            raise Exception('Error in script source', 'Something went wrong')
         else:
             file = output.split("\n")[0]
+
+            if not file:
+                raise Exception('InputError', 'Script "' + self.path + '" gave no output')
+
             return file

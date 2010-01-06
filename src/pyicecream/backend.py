@@ -4,6 +4,8 @@ gobject.threads_init()
 import gst
 
 #@TODO: look into the posibilities of gst_controller:
+# * http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/section-dparams-parameters.html
+# * http://www.google.nl/search?hl=nl&client=firefox-a&rls=com.ubuntu%3Aen-US%3Aofficial&q=gstreamer+python++query+position&btnG=Zoeken&meta=&aq=f&oq=
 
 class Backend(object):
 
@@ -45,6 +47,11 @@ class Backend(object):
         t = message.type
         if t == gst.MESSAGE_EOS:
             self.playbin.set_state(gst.STATE_NULL)
+
+            #Callbacks
+            self.stream.hooks.source.call('eof', self.playbin.get_property('uri'))
+            self.stream.hooks.stream.call('eos')
+
             #self.loop.quit()
             print 'stopped gstreamer'
         elif t == gst.MESSAGE_ERROR:
@@ -57,5 +64,9 @@ class Backend(object):
             pass
 
     def on_about_to_finish(self, playbin):
-        self.uri = self.stream.source.get()
-        self.playbin.set_property('uri', self.uri)
+        old_uri = self.uri
+        new_uri = self.uri = self.stream.source.get()
+
+        playbin.set_property('uri', self.uri)
+        self.stream.hooks.source.call('transition', old_uri, new_uri)
+        self.stream.hooks.source.call('eof', old_uri)

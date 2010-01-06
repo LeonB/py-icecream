@@ -15,7 +15,7 @@ gobject.threads_init()
 
 import pyicecream
 from pyicecream import sources
-#from pyicecream.stream import Stream
+from pyicecream import callbacks
 
 #This should be wrapped in App, which should also do the configuration part
 s = pyicecream.Stream()
@@ -24,10 +24,12 @@ s.server.port = 9000
 s.server.password = 'hackmePbq11Kz'
 s.source = sources.Disk('~/Workspaces/py-icecream/samples/gapless')
 s.source = sources.Script('~/Workspaces/py-icecream/src/test/scripttest.py')
-s.source = sources.Script('wget -qO- http://basil/playlist | cat')
+#s.source = sources.Script('wget -qO- http://basil/playlist | cat')
 
-s.hooks.source.eof = hooks.Script('')
-s.hooks.source.start_play = hooks.Script('')
+s.hooks.source.transition = callbacks.Script("echo 'Dit is een overgang!'")
+s.hooks.stream.eos = callbacks.Script("echo 'Dit is het einde van alles....'")
+s.hooks.source.start_play = callbacks.Script('')
+s.hooks.source.halfway = callbacks.Script('')
 
 s.run()
 
