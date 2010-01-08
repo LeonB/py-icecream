@@ -14,6 +14,7 @@ class Backend(object):
 
     def __init__(self, stream):
         self.stream = stream
+        self.playbin = None
 
     def construct_pipeline(self):
         playbin = self.playbin = gst.element_factory_make('playbin2')
@@ -21,7 +22,7 @@ class Backend(object):
 
         sink_description = string.Template('vorbisenc ! oggmux ! \
             shout2send mount=${mount} ip=${ip} port=${port} \
-            password=${password}')
+            password=${password} sync=1')
 
         sink_description = sink_description.substitute(
             mount = self.stream.server.mount,
@@ -35,15 +36,16 @@ class Backend(object):
         playbin.set_property('video-sink', fakesink)
         playbin.set_property('audio-sink', sink)
 
-        playbin.set_property('uri', self.uri)
-
         bus = playbin.get_bus()
         bus.add_signal_watch()
         bus.connect("message", self.on_message)
         playbin.connect('about-to-finish', self.on_about_to_finish)
 
     def play(self):
-        self.construct_pipeline()
+        if not self.playbin:
+            self.construct_pipeline()
+
+        self.playbin.set_property('uri', self.uri)
         self.playbin.set_state(gst.STATE_PLAYING)
         self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
     
@@ -51,11 +53,12 @@ class Backend(object):
         t = message.type
 
         if t == gst.MESSAGE_EOS:
-            self.playbin.set_state(gst.STATE_NULL)
+            self.playbin.set_state(gst.STATE_READY)
 
             #Callbacks
             self.stream.hooks.source.call('eof', self.playbin.get_property('uri'))
             self.stream.hooks.stream.call('eos')
+            self.stream.stop()
 
             #self.loop.quit()
             print 'stopped gstreamer'
@@ -69,13 +72,16 @@ class Backend(object):
             pass
 
     def on_about_to_finish(self, playbin):
-        old_uri = self.uri
-        new_uri = self.uri = self.stream.source.get()
-
-        playbin.set_property('uri', self.uri)
-        self.stream.hooks.source.call('transition', old_uri, new_uri)
-        self.stream.hooks.source.call('eof', old_uri)
-        self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
+        try:
+            old_uri = self.uri
+            new_uri = self.uri = self.stream.source.get()
+        except Exception:
+            playbin.set_state(gst.STATE_PAUSED)
+        else:
+            playbin.set_property('uri', self.uri)
+            self.stream.hooks.source.call('transition', old_uri, new_uri)
+            self.stream.hooks.source.call('eof', old_uri)
+            self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
 
     def query_duration(self):
         return self.playbin.query_duration(gst.FORMAT_TIME)[0] / 1000000000

@@ -1,10 +1,7 @@
 import threading
 import pyicecream
+from progresswatcher import ProgressWatcher
 import new
-#from threading import Thread
-from multiprocessing import Process
-import time
-import sys
 
 class Stream(object):
 
@@ -34,24 +31,9 @@ class Stream(object):
         self.backend.play()
 
         #Voortgang in de gaten houden:
-#        p = Process(target=self.watch_progress, args=(self))
-#        p.start()
-        
-        t = threading.Thread(None, self.watch_progress)
-        t.daemon = True
-        t.start()
+        self.progress_watcher = ProgressWatcher(self.backend)
+        self.progress_watcher.daemon = True
+        self.progress_watcher.start()
 
-    def watch_progress(self):
-        import gst
-        while 1:
-            try:
-                pass
-                pos = self.backend.query_position()
-                dur = self.backend.query_duration()
-                print pos
-                print dur
-                print float(pos)/float(dur)
-                print '------------------------'
-            except gst.QueryError, e:
-                print e
-            time.sleep(1)
+    def stop(self):
+        self.progress_watcher.exit()
