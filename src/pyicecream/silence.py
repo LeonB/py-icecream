@@ -33,3 +33,4 @@ class Silence(object):
         f.setparams((self.channels, 2, self.samplerate, 0, "NONE", "Uncompressed"))
         f.writeframes(self.data())
         f.close()
+        return f

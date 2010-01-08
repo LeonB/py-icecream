@@ -76,12 +76,16 @@ class Backend(object):
             old_uri = self.uri
             new_uri = self.uri = self.stream.source.get()
         except Exception:
-            playbin.set_state(gst.STATE_PAUSED)
-        else:
-            playbin.set_property('uri', self.uri)
-            self.stream.hooks.source.call('transition', old_uri, new_uri)
-            self.stream.hooks.source.call('eof', old_uri)
-            self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
+#            playbin.set_state(gst.STATE_PAUSED)
+new_uri =
+s = Silence()
+s.write('test.wav')
+print open('test.wav').read()
+
+        playbin.set_property('uri', self.uri)
+        self.stream.hooks.source.call('transition', old_uri, new_uri)
+        self.stream.hooks.source.call('eof', old_uri)
+        self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
 
     def query_duration(self):
         return self.playbin.query_duration(gst.FORMAT_TIME)[0] / 1000000000
