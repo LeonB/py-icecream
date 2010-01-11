@@ -2,8 +2,8 @@ import string
 import gobject
 gobject.threads_init()
 import gst
-import time
 import re
+
 
 #@TODO: look into the posibilities of gst_controller:
 # * http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/section-dparams-parameters.html
@@ -17,18 +17,26 @@ class Backend(object):
         self.playbin = None
 
     def construct_pipeline(self):
+        //http://svn.jejik.com/viewvc.cgi/jukebox/jukebox/trunk/audioplayer.py?view=markup
+
         playbin = self.playbin = gst.element_factory_make('playbin2')
         fakesink = gst.element_factory_make('fakesink')
 
         sink_description = string.Template('vorbisenc ! oggmux ! \
-            shout2send mount=${mount} ip=${ip} port=${port} \
-            password=${password} sync=1')
+            shout2send sync=0 mount=${mount} ip=${ip} port=${port} \
+            password=${password} streamname="${name}" description="${description}"')
+#        sink_description = string.Template('lame vbr=4 ! \
+#            shout2send mount=${mount} ip=${ip} port=${port} \
+#            password=${password} streamname="${name}" description="${description}"')
+#        sink_description = string.Template('alsasink')
 
         sink_description = sink_description.substitute(
             mount = self.stream.server.mount,
             ip = self.stream.server.host,
             port = self.stream.server.port,
             password = self.stream.server.password,
+            name = self.stream.name,
+            description = self.stream.description
         )
 
         sink = gst.parse_bin_from_description(sink_description, True)
@@ -76,16 +84,31 @@ class Backend(object):
             old_uri = self.uri
             new_uri = self.uri = self.stream.source.get()
         except Exception:
-#            playbin.set_state(gst.STATE_PAUSED)
-new_uri =
-s = Silence()
-s.write('test.wav')
-print open('test.wav').read()
+            new_uri = self.uri = 'file://%s' % self.stream.interval_sound
 
-        playbin.set_property('uri', self.uri)
+        sink_description = string.Template('vorbisenc ! oggmux ! \
+            shout2send mount=${mount} ip=${ip} port=${port} \
+            password=${password} streamname="${name}" description="${description}"')
+
+        sink_description = sink_description.substitute(
+            mount = self.stream.server.mount,
+            ip = self.stream.server.host,
+            port = self.stream.server.port,
+            password = self.stream.server.password,
+            name = self.stream.name,
+            description = self.stream.description
+        )
+
+        sink = gst.parse_bin_from_description(sink_description, True)
+
+        playbin.set_property('audio-sink', sink)
+        self.playbin = playbin
+
+        playbin.set_property('uri', new_uri)
+        playbin.set_state(gst.STATE_PLAYING)
         self.stream.hooks.source.call('transition', old_uri, new_uri)
         self.stream.hooks.source.call('eof', old_uri)
-        self.stream.hooks.source.call('start_play', self.playbin.get_property('uri'))
+        self.stream.hooks.source.call('start_play', new_uri)
 
     def query_duration(self):
         return self.playbin.query_duration(gst.FORMAT_TIME)[0] / 1000000000

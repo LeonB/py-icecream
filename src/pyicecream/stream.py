@@ -1,9 +1,15 @@
-import threading
 import pyicecream
 from progresswatcher import ProgressWatcher
 import new
+import tempfile
+from silence import Silence
 
 class Stream(object):
+    name = 'py-icecream stream'
+    description = None
+    progress_watcher = None
+    check_interval = 5
+    interval_sound = None
 
     def __init__(self):
         self.server = pyicecream.Server()
@@ -13,13 +19,16 @@ class Stream(object):
         self.hooks = new.classobj('hooks', (object,), {})()
 
         self.hooks.source = pyicecream.HooksHolder()
-        self.hooks.source.start_play = lambda *args: None
-        self.hooks.source.halfway = lambda *args: None
-        self.hooks.source.transition = lambda *args: None
-        self.hooks.source.eof = lambda *args: None
+        self.hooks.source.add_hook('start_play')
+        self.hooks.source.add_hook('halfway')
+        self.hooks.source.add_hook('transition')
+        self.hooks.source.add_hook('eof')
 
         self.hooks.stream = pyicecream.HooksHolder()
-        self.hooks.stream.eos = lambda *args: None
+        self.hooks.stream.add_hook('eos')
+        self.hooks.stream.add_hook('stop')
+
+        self.interval_sound = self.silent_file()
 
     def run(self):
         """This should read the source and start streaming"""
@@ -33,7 +42,16 @@ class Stream(object):
         #Voortgang in de gaten houden:
         self.progress_watcher = ProgressWatcher(self.backend)
         self.progress_watcher.daemon = True
-        self.progress_watcher.start()
+#        self.progress_watcher.start()
 
     def stop(self):
+        self.hooks.stream.call('stop')
         self.progress_watcher.exit()
+
+    def silent_file(self):
+        self._tempfile = f = tempfile.NamedTemporaryFile()
+        s = Silence()
+        s.frequency = 0
+        s.length = self.check_interval
+        s.write(f.name)
+        return f.name

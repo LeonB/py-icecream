@@ -8,7 +8,11 @@ class Script(Callback):
         self.command = command
 
     def run(self, *args):
-        command_with_arguments = self.command + ' ' + string.join(map(str, args), ' ')
+        bash_arguments = []
+        for arg in args:
+           bash_arguments.append("'" + arg.replace("'", "'\\''") + "'")
+
+        command_with_arguments = self.command + ' ' + string.join(map(str, bash_arguments), ' ')
 
         #maybe give arguments such as previous output et cetera
         sp = subprocess.Popen(command_with_arguments, shell=True, stdout=subprocess.PIPE)
